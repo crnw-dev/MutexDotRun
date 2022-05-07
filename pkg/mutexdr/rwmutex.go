@@ -15,8 +15,8 @@ func (mutex *RWMutex[T]) WRun(f func(old T) (new T)) {
 }
 
 func (mutex *RWMutex[T]) RRun(f func(old T)) {
-	mutex.mutex.Lock()
-	defer mutex.mutex.Unlock()
+	mutex.mutex.RLock()
+	defer mutex.mutex.RUnlock()
 
 	f(mutex.value)
 }
