@@ -27,18 +27,18 @@ type RW[T any] struct {
 	W[T]
 }
 
-func (mu *RW[T]) RRun(f func(old T)) {
+func (mu *RW[T]) RRun(f func(value T)) {
 	mu.standardMutex.RLock()
 	defer mu.standardMutex.RUnlock()
 
 	f(mu.value)
 }
 
-func (mu *RW[T]) ARRun(f func(old T)) chan<- struct{} {
+func (mu *RW[T]) ARRun(f func(value T)) chan<- struct{} {
 	type cT = chan struct{}
 
 	c := make(cT)
-	go func(mu *RW[T], c cT, f func(old T)) {
+	go func(mu *RW[T], c cT, f func(value T)) {
 		mu.RRun(f)
 
 		close(c)
