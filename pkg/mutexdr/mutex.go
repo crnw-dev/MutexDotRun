@@ -8,6 +8,13 @@ func NewW[T any]() W[T] {
 	}
 }
 
+func NewWWith[T any](value T) W[T] {
+	w := NewW[T]()
+	w.value = value
+
+	return w
+}
+
 type W[T any] struct {
 	value         T
 	standardMutex interface {

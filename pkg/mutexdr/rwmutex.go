@@ -14,6 +14,13 @@ func NewRW[T any]() RW[T] {
 	return rw
 }
 
+func NewRWWith[T any](value T) RW[T] {
+	rw := NewRW[T]()
+	rw.value = value
+
+	return rw
+}
+
 type RW[T any] struct {
 	standardMutex *sync.RWMutex
 
