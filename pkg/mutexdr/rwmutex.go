@@ -34,15 +34,13 @@ func (mu *RW[T]) RRun(f func(old T)) {
 	f(mu.value)
 }
 
-func (mu *RW[T]) ARRun(f func(old T) (new T)) chan<- struct{} {
+func (mu *RW[T]) ARRun(f func(old T)) chan<- struct{} {
 	c := make(chan struct{})
-	go func(c chan struct{}) {
-		mu.standardMutex.Lock()
-		defer mu.standardMutex.Unlock()
+	go func(mu *RW[T], c chan struct{}, f func(old T)) {
+		mu.RRun(f)
 
-		mu.value = f(mu.value)
 		close(c)
-	}(c)
+	}(mu, c, f)
 
 	return c
 }
