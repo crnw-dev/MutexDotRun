@@ -32,13 +32,13 @@ func (mu *W[T]) WRun(f func(old T) (new T)) {
 
 func (mu *W[T]) AWRun(f func(old T) (new T)) chan<- T {
 	c := make(chan T)
-	go func(c chan T) {
+	go func(mu *W[T], c chan T) {
 		mu.standardMutex.Lock()
-		defer mu.standardMutex.Unlock()
-
 		mu.value = f(mu.value)
+		mu.standardMutex.Unlock()
+
 		c <- mu.value
-	}(c)
+	}(mu, c)
 
 	return c
 }
