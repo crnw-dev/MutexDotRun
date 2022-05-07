@@ -4,7 +4,7 @@ import "sync"
 
 type RWMutex[T any] struct {
 	value T
-	mutex sync.Mutex
+	mutex sync.RWMutex
 }
 
 func (mutex *RWMutex[T]) WRun(f func(old T) (new T)) {
