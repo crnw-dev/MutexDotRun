@@ -9,7 +9,7 @@ type Mutex[T any] struct {
 
 func (mutex *Mutex[T]) Run(f func(old T) (new T)) {
 	mutex.mutex.Lock()
-	defer mutex.mutex.UnLock()
+	defer mutex.mutex.Unlock()
 
 	mutex.value = f(mutex.value)
 }
