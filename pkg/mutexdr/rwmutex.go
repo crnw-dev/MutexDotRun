@@ -15,7 +15,6 @@ func NewRW[T any]() RW[T] {
 }
 
 type RW[T any] struct {
-	value         T
 	standardMutex *sync.RWMutex
 
 	W[T]
