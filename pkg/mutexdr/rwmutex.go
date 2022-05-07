@@ -35,8 +35,10 @@ func (mu *RW[T]) RRun(f func(old T)) {
 }
 
 func (mu *RW[T]) ARRun(f func(old T)) chan<- struct{} {
-	c := make(chan struct{})
-	go func(mu *RW[T], c chan struct{}, f func(old T)) {
+	type cT = chan struct{}
+
+	c := make(cT)
+	go func(mu *RW[T], c cT, f func(old T)) {
 		mu.RRun(f)
 
 		close(c)
