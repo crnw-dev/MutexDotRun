@@ -3,44 +3,44 @@ package mutexdr
 import "sync"
 
 type RWMutex[T any] struct {
-	value T
-	mutex sync.RWMutex
+	value         T
+	standardMutex sync.RWMutex
 }
 
-func (mutex *RWMutex[T]) WRun(f func(old T) (new T)) {
-	mutex.mutex.Lock()
-	defer mutex.mutex.Unlock()
+func (mu *RWMutex[T]) WRun(f func(old T) (new T)) {
+	mu.standardMutex.Lock()
+	defer mu.standardMutex.Unlock()
 
-	mutex.value = f(mutex.value)
+	mu.value = f(mu.value)
 }
 
-func (mutex *RWMutex[T]) RRun(f func(old T)) {
-	mutex.mutex.RLock()
-	defer mutex.mutex.RUnlock()
+func (mu *RWMutex[T]) RRun(f func(old T)) {
+	mu.standardMutex.RLock()
+	defer mu.standardMutex.RUnlock()
 
-	f(mutex.value)
+	f(mu.value)
 }
 
-func (mutex *Mutex[T]) AWRun(f func(old T) (new T)) chan<- T {
+func (mu *RWMutex[T]) AWRun(f func(old T) (new T)) chan<- T {
 	c := make(chan T)
 	go func(c chan T) {
-		mutex.mutex.Lock()
-		defer mutex.mutex.Unlock()
+		mu.standardMutex.Lock()
+		defer mu.standardMutex.Unlock()
 
-		mutex.value = f(mutex.value)
-		c <- mutex.value
+		mu.value = f(mu.value)
+		c <- mu.value
 	}(c)
 
 	return c
 }
 
-func (mutex *Mutex[T]) ARRun(f func(old T) (new T)) chan<- struct{} {
+func (mu *RWMutex[T]) ARRun(f func(old T) (new T)) chan<- struct{} {
 	c := make(chan struct{})
 	go func(c chan struct{}) {
-		mutex.mutex.Lock()
-		defer mutex.mutex.Unlock()
+		mu.standardMutex.Lock()
+		defer mu.standardMutex.Unlock()
 
-		mutex.value = f(mutex.value)
+		mu.value = f(mu.value)
 		close(c)
 	}(c)
 

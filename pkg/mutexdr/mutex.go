@@ -3,25 +3,25 @@ package mutexdr
 import "sync"
 
 type Mutex[T any] struct {
-	value T
-	mutex sync.Mutex
+	value         T
+	standardMutex sync.Mutex
 }
 
-func (mutex *Mutex[T]) Run(f func(old T) (new T)) {
-	mutex.mutex.Lock()
-	defer mutex.mutex.Unlock()
+func (mu *Mutex[T]) Run(f func(old T) (new T)) {
+	mu.standardMutex.Lock()
+	defer mu.standardMutex.Unlock()
 
-	mutex.value = f(mutex.value)
+	mu.value = f(mu.value)
 }
 
-func (mutex *Mutex[T]) ARun(f func(old T) (new T)) chan<- T {
+func (mu *Mutex[T]) ARun(f func(old T) (new T)) chan<- T {
 	c := make(chan T)
 	go func(c chan T) {
-		mutex.mutex.Lock()
-		defer mutex.mutex.Unlock()
+		mu.standardMutex.Lock()
+		defer mu.standardMutex.Unlock()
 
-		mutex.value = f(mutex.value)
-		c <- mutex.value
+		mu.value = f(mu.value)
+		c <- mu.value
 	}(c)
 
 	return c
