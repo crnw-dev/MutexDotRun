@@ -38,6 +38,7 @@ func (mu *W[T]) AWRun(f func(old T) (new T)) chan<- T {
 		mu.standardMutex.Unlock()
 
 		c <- mu.value
+		close(c)
 	}(mu, c)
 
 	return c
