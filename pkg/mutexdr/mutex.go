@@ -7,7 +7,7 @@ type Mutex[T any] struct {
 	mutex sync.Mutex
 }
 
-func (mutex *Mutex) Run(f func(old T) (new T)) {
+func (mutex *Mutex[T]) Run(f func(old T) (new T)) {
 	mutex.mutex.Lock()
 	defer mutex.mutex.UnLock()
 
