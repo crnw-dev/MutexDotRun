@@ -2,6 +2,10 @@ package mutexdr
 
 import "sync"
 
+func NewRW[T any]() Rw[T] {
+	return Rw[T]{}
+}
+
 type Rw[T any] struct {
 	value         T
 	standardMutex sync.RWMutex
