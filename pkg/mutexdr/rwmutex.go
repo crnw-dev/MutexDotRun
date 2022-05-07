@@ -2,30 +2,30 @@ package mutexdr
 
 import "sync"
 
-func NewRW[T any]() Rw[T] {
-	return Rw[T]{}
+func NewRW[T any]() RW[T] {
+	return RW[T]{}
 }
 
-type Rw[T any] struct {
+type RW[T any] struct {
 	value         T
 	standardMutex sync.RWMutex
 }
 
-func (mu *Rw[T]) WRun(f func(old T) (new T)) {
+func (mu *RW[T]) WRun(f func(old T) (new T)) {
 	mu.standardMutex.Lock()
 	defer mu.standardMutex.Unlock()
 
 	mu.value = f(mu.value)
 }
 
-func (mu *Rw[T]) RRun(f func(old T)) {
+func (mu *RW[T]) RRun(f func(old T)) {
 	mu.standardMutex.RLock()
 	defer mu.standardMutex.RUnlock()
 
 	f(mu.value)
 }
 
-func (mu *Rw[T]) AWRun(f func(old T) (new T)) chan<- T {
+func (mu *RW[T]) AWRun(f func(old T) (new T)) chan<- T {
 	c := make(chan T)
 	go func(c chan T) {
 		mu.standardMutex.Lock()
@@ -38,7 +38,7 @@ func (mu *Rw[T]) AWRun(f func(old T) (new T)) chan<- T {
 	return c
 }
 
-func (mu *Rw[T]) ARRun(f func(old T) (new T)) chan<- struct{} {
+func (mu *RW[T]) ARRun(f func(old T) (new T)) chan<- struct{} {
 	c := make(chan struct{})
 	go func(c chan struct{}) {
 		mu.standardMutex.Lock()
