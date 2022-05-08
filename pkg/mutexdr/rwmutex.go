@@ -24,7 +24,7 @@ func NewRWWith[T any](value T) RW[T] {
 	return rw
 }
 
-// W is an extended version of sync.RWMutex with run functions and generic-type.
+// RW is an extended version of sync.RWMutex with run functions and generic-type.
 // Use NewRW or NewRWWith to create a new RW.
 type RW[T any] struct {
 	standardMutex *sync.RWMutex
