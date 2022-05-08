@@ -2,12 +2,15 @@ package mutexdr
 
 import "sync"
 
+// NewW creates a writer mutex (W) with the provided type [T any].
 func NewW[T any]() W[T] {
 	return W[T]{
 		standardMutex: &sync.Mutex{},
 	}
 }
 
+// NewWWith does the same thing as NewW.
+// But you can set a default value of [T any] for the new W.
 func NewWWith[T any](value T) W[T] {
 	w := NewW[T]()
 	w.value = value
@@ -15,6 +18,8 @@ func NewWWith[T any](value T) W[T] {
 	return w
 }
 
+// W is an extended version of sync.Mutex with run functions and generic-type.
+// Use NewW or NewWWith to create a new W.
 type W[T any] struct {
 	value         T
 	standardMutex interface {
@@ -23,6 +28,9 @@ type W[T any] struct {
 	}
 }
 
+// WRun locks the writer mutex and runs the provded function.
+// Variable old is the curernt value of the mutex.
+// It can be updated by returning a modified value.
 func (mu *W[T]) WRun(f func(old T) (new T)) {
 	mu.standardMutex.Lock()
 	defer mu.standardMutex.Unlock()
@@ -30,6 +38,9 @@ func (mu *W[T]) WRun(f func(old T) (new T)) {
 	mu.value = f(mu.value)
 }
 
+// AWRun does the same thing as WRun.
+// But returns a channel where the updated value will be sent to.
+// It can only be used for once and closes after sending the updated value.
 func (mu *W[T]) AWRun(f func(old T) (new T)) chan<- T {
 	type cT = chan T
 
