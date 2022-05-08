@@ -39,8 +39,8 @@ func (mu *W[T]) WRun(f func(old T) (new T)) {
 }
 
 // AWRun does the same thing as WRun.
-// But returns a channel where the updated value will be sent to.
-// It can only be used for once and closes after sending the updated value.
+// But returns a channel that the updated value will be sent to after the writer mutex re-locks.
+// It closes right after sending the updated value.
 func (mu *W[T]) AWRun(f func(old T) (new T)) chan<- T {
 	type cT = chan T
 
