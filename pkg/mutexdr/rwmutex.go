@@ -33,7 +33,7 @@ type RW[T any] struct {
 }
 
 // RRun locks the reader mutex and runs the provded function.
-// Variable old is the curernt value of the mutex.
+// Variable value is the curernt value of the mutex.
 func (mu *RW[T]) RRun(f func(value T)) {
 	mu.standardMutex.RLock()
 	defer mu.standardMutex.RUnlock()
