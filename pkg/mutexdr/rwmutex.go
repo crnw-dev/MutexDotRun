@@ -41,7 +41,7 @@ func (mu *RW[T]) RRun(f func(value T)) {
 	f(mu.value)
 }
 
-// ARRun does the same thing as RRun.
+// ARRun (await-RRun) does the same thing as RRun.
 // But returns a channel which will be closed after the reader mutex re-locks.
 func (mu *RW[T]) ARRun(f func(value T)) chan<- struct{} {
 	type cT = chan struct{}
