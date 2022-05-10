@@ -32,26 +32,10 @@ type RW[T any] struct {
 	W[T]
 }
 
-// RRun locks the reader mutex and runs the provded function.
-// Variable value is the curernt value of the mutex.
-func (mu *RW[T]) RRun(f func(value T)) {
+// Load locks the reader mutex and returns the curernt value of the mutex.
+func (mu *RW[T]) Load() T {
 	mu.standardMutex.RLock()
 	defer mu.standardMutex.RUnlock()
 
-	f(mu.value)
-}
-
-// ARRun (await-RRun) does the same thing as RRun.
-// But returns a channel which will be closed after the reader mutex re-locks.
-func (mu *RW[T]) ARRun(f func(value T)) chan<- struct{} {
-	type cT = chan struct{}
-
-	c := make(cT)
-	go func(mu *RW[T], c cT, f func(value T)) {
-		mu.RRun(f)
-
-		close(c)
-	}(mu, c, f)
-
-	return c
+	return mu.value
 }
