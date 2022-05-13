@@ -28,20 +28,21 @@ type W[T any] struct {
 	}
 }
 
-// WRun locks the writer mutex and runs the provded function.
+// Run locks the writer mutex and runs the provded function.
 // Variable old is the curernt value of the mutex.
 // It can be updated by returning a modified value.
-func (mu *W[T]) WRun(f func(old T) (new T)) {
+func (mu *W[T]) Run(f func(old T) (new T)) {
 	mu.standardMutex.Lock()
 	defer mu.standardMutex.Unlock()
 
 	mu.value = f(mu.value)
 }
 
-// AWRun (await-WRun) does the same thing as WRun.
+// ARun (await-Run) does the same thing as Run.
 // But returns a channel that the updated value will be sent to after the writer mutex re-locks.
+//
 // It closes right after sending the updated value.
-func (mu *W[T]) AWRun(f func(old T) (new T)) chan<- T {
+func (mu *W[T]) ARun(f func(old T) (new T)) chan<- T {
 	type cT = chan T
 
 	c := make(cT)
