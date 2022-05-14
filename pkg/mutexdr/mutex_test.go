@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestMutex(t *testing.T) {
+func TestW(t *testing.T) {
 	w := NewW[int]()
 	c1 := make(chan struct{})
 	c2 := make(chan struct{})
