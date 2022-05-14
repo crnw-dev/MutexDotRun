@@ -2,7 +2,8 @@ package mutexdr
 
 import "sync"
 
-// NewRW creates a reader and writer mutex (RW) with the provided type [T any].
+// NewRW creates a reader and writer mutex (RW).
+// T is the value's type.
 func NewRW[T any]() RW[T] {
 	m := &sync.RWMutex{}
 	rw := RW[T]{
@@ -16,7 +17,7 @@ func NewRW[T any]() RW[T] {
 }
 
 // NewRWWith does the same thing as NewRW.
-// But you can set a default value of [T any] for the new RW.
+// But RW's value can be predefined.
 func NewRWWith[T any](value T) RW[T] {
 	rw := NewRW[T]()
 	rw.value = value
@@ -24,7 +25,8 @@ func NewRWWith[T any](value T) RW[T] {
 	return rw
 }
 
-// W is an extended version of sync.RWMutex with run functions and generic-type.
+// RW is wrapper of sync.RWMutex with Load and holds a value.
+// It embeds W.
 // Use NewRW or NewRWWith to create a new RW.
 type RW[T any] struct {
 	standardMutex *sync.RWMutex
@@ -32,7 +34,7 @@ type RW[T any] struct {
 	W[T]
 }
 
-// Load locks the reader mutex and returns the curernt value of the mutex.
+// Load locks the reader mutex and returns the RW's curernt value.
 func (mu *RW[T]) Load() T {
 	mu.standardMutex.RLock()
 	defer mu.standardMutex.RUnlock()

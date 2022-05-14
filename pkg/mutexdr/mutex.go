@@ -2,7 +2,8 @@ package mutexdr
 
 import "sync"
 
-// NewW creates a writer mutex (W) with the provided type [T any].
+// NewW creates a writer mutex (W).
+// T is the value's type.
 func NewW[T any]() W[T] {
 	return W[T]{
 		standardMutex: &sync.Mutex{},
@@ -10,7 +11,7 @@ func NewW[T any]() W[T] {
 }
 
 // NewWWith does the same thing as NewW.
-// But you can set a default value of [T any] for the new W.
+// But W's value can be predefined.
 func NewWWith[T any](value T) W[T] {
 	w := NewW[T]()
 	w.value = value
@@ -18,7 +19,7 @@ func NewWWith[T any](value T) W[T] {
 	return w
 }
 
-// W is an extended version of sync.Mutex with run functions and generic-type.
+// W is wrapper of sync.Mutex with Run, ARun and holds a value.
 // Use NewW or NewWWith to create a new W.
 type W[T any] struct {
 	value         T
@@ -29,7 +30,7 @@ type W[T any] struct {
 }
 
 // Run locks the writer mutex and runs the provded function.
-// Variable old is the curernt value of the mutex.
+// Variable old is the W's curernt value.
 // It can be updated by returning a modified value.
 func (mu *W[T]) Run(f func(old T) (new T)) {
 	mu.standardMutex.Lock()
@@ -40,8 +41,7 @@ func (mu *W[T]) Run(f func(old T) (new T)) {
 
 // ARun (await-Run) does the same thing as Run.
 // But returns a channel that the updated value will be sent to after the writer mutex re-locks.
-//
-// It closes right after sending the updated value.
+// A channel should only has one receiver.
 func (mu *W[T]) ARun(f func(old T) (new T)) chan<- T {
 	type cT = chan T
 
