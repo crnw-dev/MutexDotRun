@@ -43,10 +43,8 @@ func (mu *W[T]) Run(f func(old T) (new T)) {
 // But returns a channel that the updated value will be sent to after the writer mutex re-locks.
 // A channel should only has one receiver.
 func (mu *W[T]) ARun(f func(old T) (new T)) chan<- T {
-	type cT = chan T
-
-	c := make(cT, 1)
-	go func(mu *W[T], c cT) {
+	c := make(chan T, 1)
+	go func(mu *W[T], c chan T) {
 		mu.standardMutex.Lock()
 		mu.value = f(mu.value)
 		mu.standardMutex.Unlock()
